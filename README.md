@@ -35,4 +35,5 @@ Este repositorio contiene un script en Python diseñado para realizar backups au
     pip install -r requirements.txt
 
 4. Configura tus credenciales de AWS si aún no lo has hecho:
+    ```bash
     aws configure
