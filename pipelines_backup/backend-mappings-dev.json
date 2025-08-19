@@ -1,0 +1,74 @@
+{
+    "name": "backend-mappings-dev",
+    "roleArn": "arn:aws:iam::161608321537:role/service-role/AWSCodePipelineServiceRole-us-east-1-serverless-pipeline",
+    "artifactStore": {
+        "type": "S3",
+        "location": "codepipeline-us-east-1-860923873381"
+    },
+    "stages": [
+        {
+            "name": "Source",
+            "actions": [
+                {
+                    "name": "Source",
+                    "actionTypeId": {
+                        "category": "Source",
+                        "owner": "AWS",
+                        "provider": "CodeStarSourceConnection",
+                        "version": "1"
+                    },
+                    "runOrder": 1,
+                    "configuration": {
+                        "BranchName": "main",
+                        "ConnectionArn": "arn:aws:codestar-connections:us-east-1:161608321537:connection/1a48550a-ecb2-45b0-9aef-4d9497f2b2ff",
+                        "DetectChanges": "false",
+                        "FullRepositoryId": "andescommercecloud/acc-backend-mappings",
+                        "OutputArtifactFormat": "CODE_ZIP"
+                    },
+                    "outputArtifacts": [
+                        {
+                            "name": "SourceArtifact"
+                        }
+                    ],
+                    "inputArtifacts": [],
+                    "region": "us-east-1",
+                    "namespace": "SourceVariables"
+                }
+            ]
+        },
+        {
+            "name": "Build",
+            "actions": [
+                {
+                    "name": "Build",
+                    "actionTypeId": {
+                        "category": "Build",
+                        "owner": "AWS",
+                        "provider": "CodeBuild",
+                        "version": "1"
+                    },
+                    "runOrder": 1,
+                    "configuration": {
+                        "EnvironmentVariables": "[{\"name\":\"STAGE\",\"value\":\"dev\",\"type\":\"PLAINTEXT\"}]",
+                        "ProjectName": "Serverless-build-dev"
+                    },
+                    "outputArtifacts": [
+                        {
+                            "name": "BuildArtifact"
+                        }
+                    ],
+                    "inputArtifacts": [
+                        {
+                            "name": "SourceArtifact"
+                        }
+                    ],
+                    "region": "us-east-1",
+                    "namespace": "BuildVariables"
+                }
+            ]
+        }
+    ],
+    "version": 1,
+    "executionMode": "SUPERSEDED",
+    "pipelineType": "V1"
+}

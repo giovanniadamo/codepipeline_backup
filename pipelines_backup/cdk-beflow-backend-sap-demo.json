@@ -1,0 +1,88 @@
+{
+    "name": "cdk-beflow-backend-sap-demo",
+    "roleArn": "arn:aws:iam::161608321537:role/service-role/AWSCodePipelineServiceRole-us-east-1-serverless-pipeline",
+    "artifactStore": {
+        "type": "S3",
+        "location": "cdkbeflowsappipelinestack-cdkbeflowbackendsapdemoa-h8nsnj91lbja"
+    },
+    "stages": [
+        {
+            "name": "Source",
+            "actions": [
+                {
+                    "name": "Source",
+                    "actionTypeId": {
+                        "category": "Source",
+                        "owner": "AWS",
+                        "provider": "CodeStarSourceConnection",
+                        "version": "1"
+                    },
+                    "runOrder": 1,
+                    "configuration": {
+                        "BranchName": "main",
+                        "ConnectionArn": "arn:aws:codestar-connections:us-east-1:161608321537:connection/1a48550a-ecb2-45b0-9aef-4d9497f2b2ff",
+                        "FullRepositoryId": "andescommercecloud/beflow-backend-sap"
+                    },
+                    "outputArtifacts": [
+                        {
+                            "name": "SourceArtifact"
+                        }
+                    ],
+                    "inputArtifacts": [],
+                    "roleArn": "arn:aws:iam::161608321537:role/service-role/AWSCodePipelineServiceRole-us-east-1-serverless-pipeline"
+                }
+            ]
+        },
+        {
+            "name": "Build",
+            "actions": [
+                {
+                    "name": "Build",
+                    "actionTypeId": {
+                        "category": "Build",
+                        "owner": "AWS",
+                        "provider": "CodeBuild",
+                        "version": "1"
+                    },
+                    "runOrder": 1,
+                    "configuration": {
+                        "EnvironmentVariables": "[{\"name\":\"STAGE\",\"type\":\"PLAINTEXT\",\"value\":\"demo\"}]",
+                        "ProjectName": "cdk-serverless-build-demo"
+                    },
+                    "outputArtifacts": [
+                        {
+                            "name": "BuildArtifact"
+                        }
+                    ],
+                    "inputArtifacts": [
+                        {
+                            "name": "SourceArtifact"
+                        }
+                    ],
+                    "roleArn": "arn:aws:iam::161608321537:role/CDKBeflowSapPipelineStack-cdkbeflowbackendsapdemoBu-fxcKrbhhdAxO",
+                    "namespace": "BuildVariables"
+                }
+            ]
+        }
+    ],
+    "version": 1,
+    "executionMode": "QUEUED",
+    "pipelineType": "V2",
+    "triggers": [
+        {
+            "providerType": "CodeStarSourceConnection",
+            "gitConfiguration": {
+                "sourceActionName": "Source",
+                "push": [
+                    {
+                        "tags": {
+                            "includes": [
+                                "v*"
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

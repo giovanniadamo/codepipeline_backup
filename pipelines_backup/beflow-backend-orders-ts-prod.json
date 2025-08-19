@@ -1,0 +1,91 @@
+{
+    "name": "beflow-backend-orders-ts-prod",
+    "roleArn": "arn:aws:iam::161608321537:role/service-role/AWSCodePipelineServiceRole-us-east-1-serverless-pipeline",
+    "artifactStore": {
+        "type": "S3",
+        "location": "codepipeline-us-east-1-860923873381"
+    },
+    "stages": [
+        {
+            "name": "Source",
+            "actions": [
+                {
+                    "name": "Source",
+                    "actionTypeId": {
+                        "category": "Source",
+                        "owner": "AWS",
+                        "provider": "CodeStarSourceConnection",
+                        "version": "1"
+                    },
+                    "runOrder": 1,
+                    "configuration": {
+                        "BranchName": "prod",
+                        "ConnectionArn": "arn:aws:codestar-connections:us-east-1:161608321537:connection/1a48550a-ecb2-45b0-9aef-4d9497f2b2ff",
+                        "DetectChanges": "true",
+                        "FullRepositoryId": "andescommercecloud/beflow-backend-orders-ts",
+                        "OutputArtifactFormat": "CODE_ZIP"
+                    },
+                    "outputArtifacts": [
+                        {
+                            "name": "SourceArtifact"
+                        }
+                    ],
+                    "inputArtifacts": [],
+                    "region": "us-east-1",
+                    "namespace": "SourceVariables"
+                }
+            ]
+        },
+        {
+            "name": "Build",
+            "actions": [
+                {
+                    "name": "Build",
+                    "actionTypeId": {
+                        "category": "Build",
+                        "owner": "AWS",
+                        "provider": "CodeBuild",
+                        "version": "1"
+                    },
+                    "runOrder": 1,
+                    "configuration": {
+                        "EnvironmentVariables": "[{\"name\":\"STAGE\",\"value\":\"prod\",\"type\":\"PLAINTEXT\"}]",
+                        "ProjectName": "Serverless-build-prod"
+                    },
+                    "outputArtifacts": [
+                        {
+                            "name": "BuildArtifact"
+                        }
+                    ],
+                    "inputArtifacts": [
+                        {
+                            "name": "SourceArtifact"
+                        }
+                    ],
+                    "region": "us-east-1",
+                    "namespace": "BuildVariables"
+                }
+            ]
+        }
+    ],
+    "version": 1,
+    "executionMode": "QUEUED",
+    "pipelineType": "V2",
+    "triggers": [
+        {
+            "providerType": "CodeStarSourceConnection",
+            "gitConfiguration": {
+                "sourceActionName": "Source",
+                "push": [
+                    {
+                        "branches": {
+                            "includes": [
+                                "prod"
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

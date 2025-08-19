@@ -2,3 +2,5 @@ boto3
 json
 os
 inquirer
+pymongo
+requests
